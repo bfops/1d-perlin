@@ -46,7 +46,10 @@ pub fn main() {
 
   let mut heightmap =
     BufferTexture::new(gl, gl::R32F, WINDOW_WIDTH as usize);
-  heightmap.buffer.push(gl, &[0.0; WINDOW_WIDTH as usize]);
+  for i in 0..WINDOW_WIDTH {
+    let h = i as f32 / WINDOW_HEIGHT as f32 * 2.0 - 1.0;
+    heightmap.buffer.push(gl, &[h]);
+  }
 
   {
     let mut bind = |name, id| {
@@ -94,16 +97,19 @@ fn make_shader<'a, 'b:'a>(
   let vertex_shader: String = format!("
     #version 330 core
 
+    out vec4 world_pos;
+
     void main() {{
       if (gl_VertexID == 0) {{
-        gl_Position = vec4(-1, 1, 0, 1);
+        world_pos = vec4(-1, 1, 0, 1);
       }} else if (gl_VertexID == 1) {{
-        gl_Position = vec4(-1, -1, 0, 1);
+        world_pos = vec4(-1, -1, 0, 1);
       }} else if (gl_VertexID == 2) {{
-        gl_Position = vec4(1, 1, 0, 1);
+        world_pos = vec4(1, 1, 0, 1);
       }} else {{
-        gl_Position = vec4(1, -1, 0, 1);
+        world_pos = vec4(1, -1, 0, 1);
       }}
+      gl_Position = world_pos;
     }}
   ");
 
@@ -112,11 +118,18 @@ fn make_shader<'a, 'b:'a>(
 
     uniform samplerBuffer heightmap;
 
+    in vec4 world_pos;
+
     layout(location=0) out vec4 frag_color;
 
     void main() {{
-      float y = texelFetch(heightmap, 0).r;
-      frag_color = vec4(1, y-y, 0, 1);
+      int x = int(round(gl_FragCoord.x));
+      float h = texelFetch(heightmap, x).r;
+      if (world_pos.y <= h) {{
+        frag_color = vec4(1, 0, 0, 1);
+      }} else {{
+        frag_color = vec4(0, 0, 0, 1);
+      }}
     }}
   ");
 
