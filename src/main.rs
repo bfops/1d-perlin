@@ -1,5 +1,6 @@
 use gl;
 use gl::types::GLint;
+use noise::{Seed, Brownian1, perlin1};
 use std;
 use std::mem;
 use sdl2;
@@ -159,8 +160,11 @@ fn make_heightmap<'a, 'b:'a>(
 ) -> BufferTexture<'b, f32> {
   let mut ram_heightmap = [0.0; WINDOW_WIDTH as usize];
 
+  let noise = Brownian1::new(perlin1, 1).frequency(1.0 / WINDOW_WIDTH as f32);
+  let seed = Seed::new(0);
+
   for i in 0..WINDOW_WIDTH as usize {
-    let h = i as f32 / WINDOW_HEIGHT as f32 * 2.0 - 1.0;
+    let h = noise.apply(&seed, &[i as f32]);
     ram_heightmap[i] = h;
   }
 
