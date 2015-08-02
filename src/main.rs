@@ -145,7 +145,7 @@ fn make_window(sdl: &sdl2::Sdl) -> video::Window {
   let mut window =
     video::WindowBuilder::new(
       &sdl,
-      "Hello, Mandelbrot",
+      "Perlin 1D",
       WINDOW_WIDTH, WINDOW_HEIGHT,
     );
 
