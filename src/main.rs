@@ -1,6 +1,8 @@
 use gl;
 use gl::types::GLint;
-use noise::{Seed, Brownian1, perlin1};
+use noise::{Brownian1};
+use rand;
+use rand::Rng;
 use std;
 use std::mem;
 use sdl2;
@@ -155,16 +157,43 @@ fn make_window(sdl: &sdl2::Sdl) -> video::Window {
   window.build().unwrap()
 }
 
+fn perlin1(x: f32) -> f32 {
+  let gradient = |seed: u32| {
+    let seed = vec!(seed as usize);
+    let mut rng: rand::StdRng = rand::SeedableRng::from_seed(seed.as_slice());
+    let x = rng.next_u32() as i32 as f32;
+    let l = (x*x).sqrt();
+    x / l
+  };
+
+  let p0 = x.floor();
+  let p1 = p0 + 1.0;
+
+  assert!(p0 <= x);
+  assert!(x < p1);
+
+  let w = x - p0;
+  assert!(w < 1.0);
+
+  assert!((p0 as u32) < (p1 as u32));
+
+  let d =
+    (1.0 - w) * (x - p0) * gradient(p0 as u32) +
+            w * (x - p1) * gradient(p1 as u32) +
+            0.0
+  ;
+  assert!(-1.0 <= d && d <= 1.0);
+  d
+}
+
 fn make_heightmap<'a, 'b:'a>(
   gl: &'a mut GLContext,
 ) -> BufferTexture<'b, f32> {
   let mut ram_heightmap = [0.0; WINDOW_WIDTH as usize];
 
-  let noise = Brownian1::new(perlin1, 1).frequency(1.0 / WINDOW_WIDTH as f32);
-  let seed = Seed::new(0);
-
   for i in 0..WINDOW_WIDTH as usize {
-    let h = noise.apply(&seed, &[i as f32]);
+    let x = i as f32;
+    let h = perlin1(x / WINDOW_WIDTH as f32 * 16.0);
     ram_heightmap[i] = h;
   }
 

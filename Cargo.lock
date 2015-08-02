@@ -5,9 +5,9 @@ dependencies = [
  "gl 0.0.12 (git+https://github.com/bjz/gl-rs)",
  "log 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "noise 0.1.5 (git+https://github.com/bfops/noise-rs)",
+ "rand 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "sdl2 0.4.0 (git+https://github.com/AngryLawyer/rust-sdl2)",
  "stopwatch 0.0.0 (git+https://github.com/bfops/stopwatch-rs)",
- "time 0.1.25 (registry+https://github.com/rust-lang/crates.io-index)",
  "yaglw 0.0.0 (git+https://github.com/bfops/yaglw)",
 ]
 
