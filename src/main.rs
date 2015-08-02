@@ -1,4 +1,5 @@
 use gl;
+use gl::types::GLint;
 use std;
 use std::mem;
 use sdl2;
@@ -8,7 +9,7 @@ use sdl2::video;
 use stopwatch::TimerSet;
 use yaglw::gl_context::GLContext;
 use yaglw::shader::Shader;
-use yaglw::texture::BufferTexture;
+use yaglw::texture::{BufferTexture, TextureUnit};
 use yaglw::vertex_buffer::{ArrayHandle};
 
 pub const WINDOW_WIDTH: u32 = 800;
@@ -40,12 +41,28 @@ pub fn main() {
     },
   }
 
-  let shader = make_shader(gl);
+  let mut shader = make_shader(gl);
   shader.use_shader(gl);
 
   let mut heightmap =
     BufferTexture::new(gl, gl::R32F, WINDOW_WIDTH as usize);
   heightmap.buffer.push(gl, &[0.0; WINDOW_WIDTH as usize]);
+
+  {
+    let mut bind = |name, id| {
+      let unit: TextureUnit = Default::default();
+      unsafe {
+        gl::ActiveTexture(unit.gl_id());
+        gl::BindTexture(gl::TEXTURE_BUFFER, id);
+      }
+      let loc = shader.get_uniform_location(name);
+      unsafe {
+        gl::Uniform1i(loc, unit.glsl_id as GLint);
+      }
+    };
+
+    bind("heightmap", heightmap.buffer.byte_buffer.handle.gl_id);
+  }
 
   let empty_vao = ArrayHandle::new(gl);
 
@@ -93,10 +110,13 @@ fn make_shader<'a, 'b:'a>(
   let fragment_shader: String = format!("
     #version 330 core
 
+    uniform samplerBuffer heightmap;
+
     layout(location=0) out vec4 frag_color;
 
     void main() {{
-      frag_color = vec4(1, 0, 0, 1);
+      float y = texelFetch(heightmap, 0).r;
+      frag_color = vec4(1, y-y, 0, 1);
     }}
   ");
 
