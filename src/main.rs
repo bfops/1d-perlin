@@ -44,12 +44,7 @@ pub fn main() {
   let mut shader = make_shader(gl);
   shader.use_shader(gl);
 
-  let mut heightmap =
-    BufferTexture::new(gl, gl::R32F, WINDOW_WIDTH as usize);
-  for i in 0..WINDOW_WIDTH {
-    let h = i as f32 / WINDOW_HEIGHT as f32 * 2.0 - 1.0;
-    heightmap.buffer.push(gl, &[h]);
-  }
+  let heightmap = make_heightmap(gl);
 
   {
     let mut bind = |name, id| {
@@ -157,6 +152,21 @@ fn make_window(sdl: &sdl2::Sdl) -> video::Window {
   window.opengl();
 
   window.build().unwrap()
+}
+
+fn make_heightmap<'a, 'b:'a>(
+  gl: &'a mut GLContext,
+) -> BufferTexture<'b, f32> {
+  let mut ram_heightmap = [0.0; WINDOW_WIDTH as usize];
+
+  for i in 0..WINDOW_WIDTH as usize {
+    let h = i as f32 / WINDOW_HEIGHT as f32 * 2.0 - 1.0;
+    ram_heightmap[i] = h;
+  }
+
+  let mut vram_heightmap = BufferTexture::new(gl, gl::R32F, WINDOW_WIDTH as usize);
+  vram_heightmap.buffer.push(gl, &ram_heightmap);
+  vram_heightmap
 }
 
 fn process_events<'a>(
