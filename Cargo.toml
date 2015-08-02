@@ -1,0 +1,31 @@
+[package]
+
+name = "perlin1D"
+version = "0.0.0"
+authors = [
+  "Zeke Foppa <benjamin.foppa@gmail.com>",
+]
+
+[[bin]]
+
+name = "perlin"
+path = "./src/mod.rs"
+
+[dependencies]
+log = "*"
+time = "*"
+
+[dependencies.noise]
+git = "https://github.com/bfops/noise-rs"
+
+[dependencies.gl]
+git = "https://github.com/bjz/gl-rs"
+
+[dependencies.yaglw]
+git = "https://github.com/bfops/yaglw"
+
+[dependencies.sdl2]
+git = "https://github.com/AngryLawyer/rust-sdl2"
+
+[dependencies.stopwatch]
+git = "https://github.com/bfops/stopwatch-rs"
