@@ -13,8 +13,8 @@ use yaglw::shader::Shader;
 use yaglw::texture::{BufferTexture, TextureUnit};
 use yaglw::vertex_buffer::{ArrayHandle};
 
-pub const WINDOW_WIDTH: u32 = 800;
-pub const WINDOW_HEIGHT: u32 = 800;
+pub const WINDOW_WIDTH: u32 = 1800;
+pub const WINDOW_HEIGHT: u32 = 1000;
 
 pub fn main() {
   let timers = TimerSet::new();
