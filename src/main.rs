@@ -164,7 +164,7 @@ fn make_heightmap<'a, 'b:'a>(
   for i in 0..WINDOW_WIDTH as usize {
     let x = i as f32;
     let x = x / WINDOW_WIDTH as f32 * 16.0;
-    let h = perlinish::eval(1.0 / 16.0, x);
+    let h = perlinish::eval(1.0, x);
     ram_heightmap[i] = h;
   }
 
